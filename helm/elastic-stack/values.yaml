@@ -1,0 +1,131 @@
+version: ${eck_version}
+namespace: ${namespace}
+
+kibana:
+  count: ${kibana_node_count}
+  ingress:
+    enabled: true
+    annotations:
+      kubernetes.io/ingress.class: nginx
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+    host: ${hostname}
+    tls:
+      enabled: true
+  resources:
+    requests:
+      memory: 600Mi
+      cpu: 200m
+    limits:
+      memory: 2.5Gi
+      cpu: 1000m
+
+master:
+  count: ${es_master_node_count}
+  volume_size: ${es_master_node_size}
+  storageClassName: ${es_master_node_sc}
+  resources:
+    requests:
+      memory: 2Gi
+      cpu: 300m
+    limits:
+      memory: 4Gi
+      cpu: 700m
+
+worker:
+  data_hot:
+    count: ${es_data_hot_node_count}
+    volume_size: ${es_data_hot_node_size}
+    storageClassName: ${es_data_hot_node_sc}
+    resources:
+      requests:
+        memory: 2Gi
+        cpu: 200m
+      limits:
+        memory: 4Gi
+        cpu: 500m
+
+  data_warm:
+    count: ${es_data_warm_node_count}
+    volume_size: ${es_data_warm_node_size}
+    storageClassName: ${es_data_warm_node_sc}
+    resources:
+      requests:
+        memory: 2Gi
+        cpu: 200m
+      limits:
+        memory: 4Gi
+        cpu: 500m
+
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: "Monitor-Services"
+          operator: In
+          values:
+          - "true"
+
+filebeat:
+  enabled: true
+  application_index_name: ${application_index_name}
+  application_input_type_key: ${application_input_type_key}
+  application_input_type_value: ${application_input_type_value}
+  database_index_name: ${database_index_name}
+  mongodb_input_type_key: ${mongodb_input_type_key}
+  mongodb_input_type_value: ${mongodb_input_type_value}
+  mysql_input_type_key: ${mysql_input_type_key}
+  mysql_input_type_value: ${mysql_input_type_value}
+  redis_input_type_key: ${redis_input_type_key}
+  redis_input_type_value: ${redis_input_type_value}
+  rabbitmq_input_type_key: ${rabbitmq_input_type_key}
+  rabbitmq_input_type_value: ${rabbitmq_input_type_value}
+  aws_input_type_key: ${aws_input_type_key}
+  aws_input_type_value: ${aws_input_type_value}
+  custom_index_enabled: ${custom_index_enabled}
+  custom_index_name: ${custom_index_name}
+  custom_input_type_key: ${custom_input_type_key}
+  custom_input_type_value: ${custom_input_type_value}
+  postgres_input_type_key: ${postgres_input_type_key}
+  postgres_input_type_value: ${postgres_input_type_key}
+  modules:
+    ingress_nginx_controller_enabled: ${ingress_nginx_controller_enabled}
+    mongodb_enabled: ${mongodb_enabled}
+    mysql_enabled: ${mysql_enabled}
+    postgresql_enabled: ${postgresql_enabled}
+    role_arn: ${filebeat_role_arn}
+    aws_enabled: ${aws_modules_enabled}
+    aws_cloudtrail_enabled: ${aws_cloudtrail_enabled}
+    cloudtrail_bucket_arn: ${cloudtrail_bucket_arn}
+    cloudtrail_bucket_prefix: ${cloudtrail_bucket_prefix}
+    aws_elb_enabled: ${aws_elb_enabled}
+    elb_bucket_arn: ${elb_bucket_arn}
+    elb_bucket_prefix: ${elb_bucket_prefix}
+    aws_vpc_flow_logs_enabled: ${aws_vpc_flow_logs_enabled}
+    vpc_flowlogs_bucket_arn: ${vpc_flowlogs_bucket_arn}
+    vpc_flowlogs_bucket_prefix: ${vpc_flowlogs_bucket_prefix}
+    aws_s3access_enabled: ${aws_s3access_enabled}
+    s3access_bucket_arn: ${s3access_bucket_arn}
+    s3access_bucket_prefix: ${s3access_bucket_prefix}
+    application_index_enabled: ${application_index_enabled}
+    database_mongodb_index_enabled: ${database_mongodb_index_enabled}
+    database_mysql_index_enabled: ${database_mysql_index_enabled}
+    database_redis_index_enabled: ${database_redis_index_enabled}
+    database_rabbitmq_index_enabled: ${database_rabbitmq_index_enabled}
+    database_postgres_index_enabled: ${database_postgres_index_enabled}
+    aws_index_enabled: ${aws_index_enabled}
+  username: ${eckuser}
+  password: ${eckpassword}
+  resources:
+    requests:
+      memory: 100Mi
+      cpu: 50m
+    limits:
+      memory: 500Mi
+      cpu: 200m
+
+s3:
+  role_arn: "${s3_role_arn}"
+
+# By Default ECK automatically sets Heap size based on the node on which ES is running. Override the default behaviour only if required.
+ES_JAVA_OPTS: "-Xms1500m -Xmx1500m"
