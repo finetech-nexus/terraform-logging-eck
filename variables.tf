@@ -68,8 +68,8 @@ variable "namespace" {
 
 variable "provider_type" {
   type        = string
-  default     = ""
-  description = "Choose what type of provider you want (aws, gcp)" // SUPPORTS ONLY: aws, gcp, azure
+  default     = "local"
+  description = "Choose what type of provider you want (aws, gcp)" // SUPPORTS ONLY: aws, gcp, azure, local
 }
 
 variable "role_arn" {
