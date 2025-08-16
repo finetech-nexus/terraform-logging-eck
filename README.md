@@ -1,3 +1,6 @@
+terrform login
+terraform init
+
 ## Elastic Cloud Kubernetes
 ![squareops_avatar]
 
